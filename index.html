@@ -361,7 +361,7 @@
           </svg>
         </div>
 
-        <h1>Betül, benimle barışabilir misin?</h1>
+        <h1 id="questionTitle">Betül, benimle barışabilir misin?</h1>
         <p class="subtitle" id="subtitle">HADİ HADİ HADİİ</p>
 
         <div class="buttons" id="buttonsWrap">
@@ -435,6 +435,7 @@
   <script>
     const card = document.getElementById('card');
     const questionView = document.getElementById('questionView');
+    const questionTitle = document.getElementById('questionTitle');
     const successView = document.getElementById('successView');
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
@@ -444,6 +445,7 @@
     const catMouth = document.getElementById('catMouth');
     const bgPears = document.getElementById('bgPears');
 
+    let step = 1;
     let dodgeCount = 0;
     let isEscaping = false;
     let lastDodgeTime = 0;
@@ -672,21 +674,7 @@
       tick();
     }
 
-    // "Düşünücem" button click
-    yesBtn.addEventListener('click', () => {
-      isAccepted = true;
-      noBtn.classList.add('hidden');
-      questionView.classList.add('hidden');
-      successView.classList.remove('hidden');
-      card.classList.remove('pop');
-      void card.offsetWidth;
-      card.classList.add('pop');
-      launchConfetti();
-    });
-
-    // Replay button
-    replayBtn.addEventListener('click', () => {
-      isAccepted = false;
+    function resetQuestionButtons() {
       dodgeCount = 0;
       isEscaping = false;
 
@@ -700,6 +688,38 @@
 
       subtitle.textContent = 'HADİ HADİ HADİİ';
       catMouth.setAttribute('d', 'M92 114 Q96 119 100 114 Q104 119 108 114');
+    }
+
+    // Step 1 ("Düşünücem") -> Step 2 ("Düşününce barışacak mısın?" / "Evet" - "Hayır") -> Success
+    yesBtn.addEventListener('click', () => {
+      if (step === 1) {
+        step = 2;
+        questionTitle.textContent = 'Düşününce barışacak mısın?';
+        yesBtn.textContent = 'Evet';
+        resetQuestionButtons();
+        card.classList.remove('pop');
+        void card.offsetWidth;
+        card.classList.add('pop');
+        return;
+      }
+
+      isAccepted = true;
+      noBtn.classList.add('hidden');
+      questionView.classList.add('hidden');
+      successView.classList.remove('hidden');
+      card.classList.remove('pop');
+      void card.offsetWidth;
+      card.classList.add('pop');
+      launchConfetti();
+    });
+
+    // Replay button
+    replayBtn.addEventListener('click', () => {
+      step = 1;
+      isAccepted = false;
+      questionTitle.textContent = 'Betül, benimle barışabilir misin?';
+      yesBtn.textContent = 'Düşünücem';
+      resetQuestionButtons();
 
       successView.classList.add('hidden');
       questionView.classList.remove('hidden');
