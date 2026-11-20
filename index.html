@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Betül, Benimle Barışabilir Misin? 🍐</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-1: #fff9ec;
+      --bg-2: #fef1d6;
+      --bg-3: #e9f5db;
+      --card-bg: rgba(255, 255, 255, 0.86);
+      --card-border: rgba(255, 255, 255, 0.96);
+      --text-main: #4a2c16;
+      --text-muted: #8a5a32;
+      --yes-1: #ff8c42;
+      --yes-2: #f46b25;
+      --no-bg: #fff8f0;
+      --no-border: #f0cfa8;
+      --no-text: #8c5a35;
+      --shadow-card: 0 24px 60px rgba(204, 118, 42, 0.16), 0 6px 20px rgba(130, 168, 72, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--text-main);
+      background: radial-gradient(circle at 20% 20%, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
+      user-select: none;
+    }
+
+    /* Floating background pears */
+    .bg-pears {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .bg-pear {
+      position: absolute;
+      bottom: -50px;
+      opacity: 0.36;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) translateX(0) rotate(-12deg) scale(0.85);
+        opacity: 0;
+      }
+      15% {
+        opacity: 0.4;
+      }
+      85% {
+        opacity: 0.3;
+      }
+      100% {
+        transform: translateY(-115vh) translateX(28px) rotate(24deg) scale(1.15);
+        opacity: 0;
+      }
+    }
+
+    /* Confetti canvas */
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    /* Main centered layout */
+    main {
+      position: relative;
+      z-index: 10;
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 2px solid var(--card-border);
+      border-radius: 32px;
+      padding: 36px 28px 34px;
+      text-align: center;
+      box-shadow: var(--shadow-card);
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+      position: relative;
+    }
+
+    .card.pop {
+      animation: cardPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes cardPop {
+      0% { transform: scale(0.92); }
+      55% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+
+    /* Cute Orange Cat SVG */
+    .illustration {
+      width: 156px;
+      height: 156px;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .cat-svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 10px 18px rgba(214, 118, 40, 0.18));
+      animation: gentleBob 3.2s ease-in-out infinite;
+    }
+
+    @keyframes gentleBob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .tail-wag {
+      transform-origin: 146px 158px;
+      animation: tailWag 2.2s ease-in-out infinite;
+    }
+
+    @keyframes tailWag {
+      0%, 100% { transform: rotate(-6deg); }
+      50% { transform: rotate(10deg); }
+    }
+
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(1.75rem, 5vw, 2.25rem);
+      line-height: 1.25;
+      color: var(--text-main);
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .subtitle {
+      font-size: 1.08rem;
+      color: var(--text-muted);
+      min-height: 28px;
+      margin-bottom: 28px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .subtitle.bump {
+      animation: textBump 0.35s ease;
+    }
+
+    @keyframes textBump {
+      0% { transform: scale(0.94); opacity: 0.55; }
+      60% { transform: scale(1.06); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Buttons */
+    .buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      min-height: 60px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 1.08rem;
+      cursor: pointer;
+      padding: 15px 34px;
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  box-shadow 0.22s ease,
+                  background 0.22s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .btn-yes {
+      background: linear-gradient(135deg, var(--yes-1), var(--yes-2));
+      color: #fff;
+      box-shadow: 0 12px 26px rgba(244, 107, 37, 0.34);
+      position: relative;
+      z-index: 5;
+    }
+
+    .btn-yes:hover {
+      transform: translateY(-2px) scale(var(--yes-scale, 1.05));
+      box-shadow: 0 16px 32px rgba(244, 107, 37, 0.44);
+    }
+
+    .btn-yes:active {
+      transform: scale(calc(var(--yes-scale, 1) * 0.96));
+    }
+
+    .btn-no {
+      background: var(--no-bg);
+      color: var(--no-text);
+      border: 2px solid var(--no-border);
+      box-shadow: 0 6px 16px rgba(140, 90, 53, 0.08);
+      position: relative;
+      z-index: 30;
+      touch-action: none;
+    }
+
+    .btn-no.escaping {
+      position: fixed;
+      margin: 0;
+      transition: left 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+                  top 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.16s ease;
+    }
+
+    /* Success view */
+    .hidden {
+      display: none !important;
+    }
+
+    .success-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #e5f5c8, #d4eeaa);
+      color: #4f772d;
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 6px 16px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+      letter-spacing: 0.02em;
+    }
+
+    .success-text {
+      font-size: 1.08rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      font-weight: 700;
+    }
+
+    .btn-replay {
+      background: #fff4e6;
+      color: #c95d18;
+      border: 1.5px solid #f5cba0;
+      padding: 11px 22px;
+      font-size: 0.94rem;
+      box-shadow: none;
+    }
+
+    .btn-replay:hover {
+      background: #ffe8cc;
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 28px 20px 26px;
+        border-radius: 26px;
+      }
+      .illustration {
+        width: 132px;
+        height: 132px;
+      }
+      .btn {
+        padding: 14px 28px;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-pears" id="bgPears" aria-hidden="true"></div>
+  <canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+  <main>
+    <section class="card" id="card">
+      <!-- Question State -->
+      <div id="questionView">
+        <div class="illustration">
+          <!-- Cute Orange Tabby Cat -->
+          <svg class="cat-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <!-- Wagging Tail -->
+            <path class="tail-wag" d="M144 158 C170 156 180 132 168 114 C162 106 154 112 158 120 C164 132 156 144 142 146" stroke="#F49342" stroke-width="14" stroke-linecap="round" fill="none" />
+            <!-- Body -->
+            <ellipse cx="100" cy="154" rx="48" ry="36" fill="#F69B4B" />
+            <!-- Cream Belly -->
+            <ellipse cx="100" cy="158" rx="28" ry="23" fill="#FFF2E0" />
+            <!-- Left Ear -->
+            <path d="M48 82 L42 36 L82 56 Z" fill="#F69B4B" stroke="#F69B4B" stroke-width="6" stroke-linejoin="round" />
+            <path d="M53 74 L49 46 L74 60 Z" fill="#FFD0C2" />
+            <!-- Right Ear -->
+            <path d="M152 82 L158 36 L118 56 Z" fill="#F69B4B" stroke="#F69B4B" stroke-width="6" stroke-linejoin="round" />
+            <path d="M147 74 L151 46 L126 60 Z" fill="#FFD0C2" />
+            <!-- Head -->
+            <ellipse cx="100" cy="96" rx="58" ry="48" fill="#FFA857" />
+            <!-- Tabby Forehead Stripes -->
+            <path d="M100 50 L100 66" stroke="#D96B27" stroke-width="5.5" stroke-linecap="round" />
+            <path d="M86 53 L89 65" stroke="#D96B27" stroke-width="4.5" stroke-linecap="round" />
+            <path d="M114 53 L111 65" stroke="#D96B27" stroke-width="4.5" stroke-linecap="round" />
+            <!-- Cheek Stripes -->
+            <path d="M46 95 L58 97" stroke="#D96B27" stroke-width="4" stroke-linecap="round" />
+            <path d="M48 106 L59 105" stroke="#D96B27" stroke-width="4" stroke-linecap="round" />
+            <path d="M154 95 L142 97" stroke="#D96B27" stroke-width="4" stroke-linecap="round" />
+            <path d="M152 106 L141 105" stroke="#D96B27" stroke-width="4" stroke-linecap="round" />
+            <!-- Whiskers -->
+            <path d="M32 100 L54 103" stroke="#6E3B1E" stroke-width="2.2" stroke-linecap="round" opacity="0.7" />
+            <path d="M30 111 L54 110" stroke="#6E3B1E" stroke-width="2.2" stroke-linecap="round" opacity="0.7" />
+            <path d="M168 100 L146 103" stroke="#6E3B1E" stroke-width="2.2" stroke-linecap="round" opacity="0.7" />
+            <path d="M170 111 L146 110" stroke="#6E3B1E" stroke-width="2.2" stroke-linecap="round" opacity="0.7" />
+            <!-- Blush -->
+            <ellipse cx="66" cy="108" rx="9" ry="5.5" fill="#FF9E80" opacity="0.55" />
+            <ellipse cx="134" cy="108" rx="9" ry="5.5" fill="#FF9E80" opacity="0.55" />
+            <!-- Muzzle -->
+            <ellipse cx="100" cy="110" rx="18" ry="13" fill="#FFF4E6" />
+            <!-- Cute Pink Nose -->
+            <path d="M95 104 L105 104 L100 110 Z" fill="#F27D72" />
+            <!-- Mouth -->
+            <path id="catMouth" d="M92 114 Q96 119 100 114 Q104 119 108 114" stroke="#5E3018" stroke-width="2.8" stroke-linecap="round" fill="none" />
+            <!-- Eyes -->
+            <circle cx="76" cy="93" r="7" fill="#3B2112" />
+            <circle cx="73.5" cy="90.5" r="2.5" fill="#FFFFFF" />
+            <circle cx="78.5" cy="95.5" r="1.1" fill="#FFFFFF" />
+            <circle cx="124" cy="93" r="7" fill="#3B2112" />
+            <circle cx="121.5" cy="90.5" r="2.5" fill="#FFFFFF" />
+            <circle cx="126.5" cy="95.5" r="1.1" fill="#FFFFFF" />
+            <!-- Little Paws -->
+            <ellipse cx="76" cy="176" rx="14" ry="10" fill="#FFF2E0" stroke="#F49342" stroke-width="3" />
+            <ellipse cx="124" cy="176" rx="14" ry="10" fill="#FFF2E0" stroke="#F49342" stroke-width="3" />
+          </svg>
+        </div>
+
+        <h1>Betül, benimle barışabilir misin?</h1>
+        <p class="subtitle" id="subtitle">HADİ HADİ HADİİ</p>
+
+        <div class="buttons" id="buttonsWrap">
+          <button type="button" class="btn btn-yes" id="yesBtn">Düşünücem</button>
+          <button type="button" class="btn btn-no" id="noBtn" tabindex="-1" aria-disabled="true">Hayır</button>
+        </div>
+      </div>
+
+      <!-- Success State -->
+      <div id="successView" class="hidden">
+        <div class="illustration">
+          <!-- Happy Orange Tabby Cat -->
+          <svg class="cat-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <!-- Wagging Tail -->
+            <path class="tail-wag" d="M144 158 C170 156 180 132 168 114 C162 106 154 112 158 120 C164 132 156 144 142 146" stroke="#F49342" stroke-width="14" stroke-linecap="round" fill="none" />
+            <!-- Body -->
+            <ellipse cx="100" cy="154" rx="48" ry="36" fill="#F69B4B" />
+            <ellipse cx="100" cy="158" rx="28" ry="23" fill="#FFF2E0" />
+            <!-- Ears -->
+            <path d="M48 82 L42 36 L82 56 Z" fill="#F69B4B" stroke="#F69B4B" stroke-width="6" stroke-linejoin="round" />
+            <path d="M53 74 L49 46 L74 60 Z" fill="#FFD0C2" />
+            <path d="M152 82 L158 36 L118 56 Z" fill="#F69B4B" stroke="#F69B4B" stroke-width="6" stroke-linejoin="round" />
+            <path d="M147 74 L151 46 L126 60 Z" fill="#FFD0C2" />
+            <!-- Head -->
+            <ellipse cx="100" cy="96" rx="58" ry="48" fill="#FFA857" />
+            <!-- Forehead Stripes -->
+            <path d="M100 50 L100 66" stroke="#D96B27" stroke-width="5.5" stroke-linecap="round" />
+            <path d="M86 53 L89 65" stroke="#D96B27" stroke-width="4.5" stroke-linecap="round" />
+            <path d="M114 53 L111 65" stroke="#D96B27" stroke-width="4.5" stroke-linecap="round" />
+            <!-- Cheek Stripes -->
+            <path d="M46 95 L58 97" stroke="#D96B27" stroke-width="4" stroke-linecap="round" />
+            <path d="M48 106 L59 105" stroke="#D96B27" stroke-width="4" stroke-linecap="round" />
+            <path d="M154 95 L142 97" stroke="#D96B27" stroke-width="4" stroke-linecap="round" />
+            <path d="M152 106 L141 105" stroke="#D96B27" stroke-width="4" stroke-linecap="round" />
+            <!-- Whiskers -->
+            <path d="M32 100 L54 103" stroke="#6E3B1E" stroke-width="2.2" stroke-linecap="round" opacity="0.7" />
+            <path d="M30 111 L54 110" stroke="#6E3B1E" stroke-width="2.2" stroke-linecap="round" opacity="0.7" />
+            <path d="M168 100 L146 103" stroke="#6E3B1E" stroke-width="2.2" stroke-linecap="round" opacity="0.7" />
+            <path d="M170 111 L146 110" stroke="#6E3B1E" stroke-width="2.2" stroke-linecap="round" opacity="0.7" />
+            <!-- Blush -->
+            <ellipse cx="64" cy="107" rx="11" ry="6.5" fill="#FF8A65" opacity="0.6" />
+            <ellipse cx="136" cy="107" rx="11" ry="6.5" fill="#FF8A65" opacity="0.6" />
+            <!-- Muzzle -->
+            <ellipse cx="100" cy="110" rx="18" ry="13" fill="#FFF4E6" />
+            <!-- Nose -->
+            <path d="M95 104 L105 104 L100 110 Z" fill="#F27D72" />
+            <!-- Happy Smile -->
+            <path d="M90 113 Q95 121 100 114 Q105 121 110 113" stroke="#5E3018" stroke-width="3" stroke-linecap="round" fill="none" />
+            <!-- Happy Closed Eyes -->
+            <path d="M68 94 Q76 84 84 94" stroke="#3B2112" stroke-width="4" stroke-linecap="round" fill="none" />
+            <path d="M116 94 Q124 84 132 94" stroke="#3B2112" stroke-width="4" stroke-linecap="round" fill="none" />
+            <!-- Sparkles -->
+            <path d="M30 34 L33 42 L41 45 L33 48 L30 56 L27 48 L19 45 L27 42 Z" fill="#9ACD32" />
+            <path d="M170 30 L172 36 L178 38 L172 40 L170 46 L168 40 L162 38 L168 36 Z" fill="#FFA857" />
+            <!-- Little Paws -->
+            <ellipse cx="76" cy="176" rx="14" ry="10" fill="#FFF2E0" stroke="#F49342" stroke-width="3" />
+            <ellipse cx="124" cy="176" rx="14" ry="10" fill="#FFF2E0" stroke="#F49342" stroke-width="3" />
+          </svg>
+        </div>
+
+        <span class="success-badge">🍐 Yaşasın! 🍐</span>
+        <h1>HADİ HADİ HADİİ</h1>
+        <p class="success-text">
+          HADİ HADİ HADİİ 🍐🐱
+        </p>
+        <button type="button" class="btn btn-replay" id="replayBtn">Tekrar sor 🍐</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const card = document.getElementById('card');
+    const questionView = document.getElementById('questionView');
+    const successView = document.getElementById('successView');
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const buttonsWrap = document.getElementById('buttonsWrap');
+    const subtitle = document.getElementById('subtitle');
+    const replayBtn = document.getElementById('replayBtn');
+    const catMouth = document.getElementById('catMouth');
+    const bgPears = document.getElementById('bgPears');
+
+    let dodgeCount = 0;
+    let isEscaping = false;
+    let lastDodgeTime = 0;
+    let isAccepted = false;
+
+    // Create ambient floating pears
+    function createBackgroundPears() {
+      for (let i = 0; i < 20; i++) {
+        const span = document.createElement('span');
+        span.className = 'bg-pear';
+        span.textContent = '🍐';
+        span.style.left = Math.random() * 100 + 'vw';
+        span.style.fontSize = (20 + Math.random() * 22) + 'px';
+        span.style.animationDuration = (9 + Math.random() * 11) + 's';
+        span.style.animationDelay = (-Math.random() * 16) + 's';
+        bgPears.appendChild(span);
+      }
+    }
+
+    function rectsOverlap(a, b, margin = 14) {
+      return !(
+        a.right + margin < b.left ||
+        a.left - margin > b.right ||
+        a.bottom + margin < b.top ||
+        a.top - margin > b.bottom
+      );
+    }
+
+    function moveNoButton(pointerX = -999, pointerY = -999) {
+      if (isAccepted) return;
+
+      const now = performance.now();
+      if (now - lastDodgeTime < 75) return;
+      lastDodgeTime = now;
+
+      const btnRect = noBtn.getBoundingClientRect();
+      const btnW = btnRect.width || 110;
+      const btnH = btnRect.height || 52;
+
+      if (!isEscaping) {
+        isEscaping = true;
+        document.body.appendChild(noBtn);
+        noBtn.classList.add('escaping');
+        noBtn.style.left = btnRect.left + 'px';
+        noBtn.style.top = btnRect.top + 'px';
+        noBtn.offsetHeight;
+      }
+
+      const padding = 18;
+      const maxX = Math.max(padding, window.innerWidth - btnW - padding);
+      const maxY = Math.max(padding, window.innerHeight - btnH - padding);
+      const yesRect = yesBtn.getBoundingClientRect();
+
+      let bestX = padding;
+      let bestY = padding;
+      let bestScore = -1;
+
+      for (let i = 0; i < 36; i++) {
+        const candX = padding + Math.random() * (maxX - padding);
+        const candY = padding + Math.random() * (maxY - padding);
+        const candRect = {
+          left: candX,
+          top: candY,
+          right: candX + btnW,
+          bottom: candY + btnH
+        };
+
+        if (rectsOverlap(candRect, yesRect, 20)) continue;
+
+        const centerX = candX + btnW / 2;
+        const centerY = candY + btnH / 2;
+        const distFromPointer = Math.hypot(centerX - pointerX, centerY - pointerY);
+        const distFromCurrent = Math.hypot(candX - btnRect.left, candY - btnRect.top);
+
+        const score = Math.min(distFromPointer, 340) + Math.min(distFromCurrent, 220) * 0.45;
+        if (distFromPointer > 150 && distFromCurrent > 90) {
+          bestX = candX;
+          bestY = candY;
+          bestScore = score;
+          break;
+        }
+        if (score > bestScore) {
+          bestScore = score;
+          bestX = candX;
+          bestY = candY;
+        }
+      }
+
+      noBtn.style.left = Math.round(bestX) + 'px';
+      noBtn.style.top = Math.round(bestY) + 'px';
+
+      dodgeCount++;
+
+      // Pulse the text on each dodge
+      subtitle.textContent = 'HADİ HADİ HADİİ';
+      subtitle.classList.remove('bump');
+      void subtitle.offsetWidth;
+      subtitle.classList.add('bump');
+
+      // Subtle pleading mouth after a few tries
+      if (dodgeCount >= 2) {
+        catMouth.setAttribute('d', 'M93 118 Q100 112 107 118');
+      }
+
+      // Gently grow the "Düşünücem" button
+      const yesScale = Math.min(1 + dodgeCount * 0.045, 1.38);
+      yesBtn.style.setProperty('--yes-scale', yesScale.toFixed(2));
+      yesBtn.style.transform = `scale(${yesScale.toFixed(2)})`;
+    }
+
+    // Intercept EVERY possible interaction with the No button
+    function blockAndDodge(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const point = e.touches && e.touches[0] ? e.touches[0] : e;
+      const x = typeof point.clientX === 'number' ? point.clientX : window.innerWidth / 2;
+      const y = typeof point.clientY === 'number' ? point.clientY : window.innerHeight / 2;
+      moveNoButton(x, y);
+      return false;
+    }
+
+    noBtn.addEventListener('pointerenter', blockAndDodge);
+    noBtn.addEventListener('mouseenter', blockAndDodge);
+    noBtn.addEventListener('pointerdown', blockAndDodge, { passive: false });
+    noBtn.addEventListener('mousedown', blockAndDodge);
+    noBtn.addEventListener('touchstart', blockAndDodge, { passive: false });
+    noBtn.addEventListener('click', blockAndDodge);
+    noBtn.addEventListener('focus', (e) => {
+      noBtn.blur();
+      blockAndDodge(e);
+    });
+
+    // Proximity detector: flee BEFORE the cursor reaches the button
+    document.addEventListener('pointermove', (e) => {
+      if (isAccepted || e.pointerType === 'touch') return;
+      const rect = noBtn.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const dist = Math.hypot(e.clientX - centerX, e.clientY - centerY);
+      const triggerRadius = Math.max(rect.width, rect.height) * 0.85 + 36;
+      if (dist < triggerRadius) {
+        moveNoButton(e.clientX, e.clientY);
+      }
+    });
+
+    // Keep the escaping button inside viewport if window is resized
+    window.addEventListener('resize', () => {
+      if (!isEscaping || isAccepted) return;
+      const rect = noBtn.getBoundingClientRect();
+      const padding = 18;
+      const clampedX = Math.min(Math.max(padding, rect.left), window.innerWidth - rect.width - padding);
+      const clampedY = Math.min(Math.max(padding, rect.top), window.innerHeight - rect.height - padding);
+      noBtn.style.left = Math.round(clampedX) + 'px';
+      noBtn.style.top = Math.round(clampedY) + 'px';
+    });
+
+    // Pear & warm confetti celebration (no hearts!)
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas.getContext('2d');
+    let confettiPieces = [];
+    let confettiAnimId = null;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function launchConfetti() {
+      const colors = ['#a7c957', '#c5e063', '#ff8c42', '#ffb703', '#f4a261', '#80b918', '#ffe66d'];
+      confettiPieces = [];
+      for (let i = 0; i < 120; i++) {
+        confettiPieces.push({
+          x: window.innerWidth / 2 + (Math.random() - 0.5) * 140,
+          y: window.innerHeight / 2 + (Math.random() - 0.5) * 60,
+          vx: (Math.random() - 0.5) * 14,
+          vy: -Math.random() * 13 - 4,
+          size: 7 + Math.random() * 8,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          vRot: (Math.random() - 0.5) * 12,
+          shape: Math.random() > 0.35 ? 'rect' : 'pear',
+          opacity: 1
+        });
+      }
+
+      if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
+
+      function tick() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let alive = 0;
+        for (const p of confettiPieces) {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.28;
+          p.vx *= 0.99;
+          p.rotation += p.vRot;
+          if (p.y > canvas.height - 60) p.opacity -= 0.025;
+          if (p.opacity <= 0) continue;
+          alive++;
+
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, p.opacity);
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+
+          if (p.shape === 'pear') {
+            ctx.font = `${Math.round(p.size * 1.8)}px serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('🍐', 0, 0);
+          } else {
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 3, p.size, p.size * 0.66);
+          }
+          ctx.restore();
+        }
+        if (alive > 0) {
+          confettiAnimId = requestAnimationFrame(tick);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          confettiAnimId = null;
+        }
+      }
+      tick();
+    }
+
+    // "Düşünücem" button click
+    yesBtn.addEventListener('click', () => {
+      isAccepted = true;
+      noBtn.classList.add('hidden');
+      questionView.classList.add('hidden');
+      successView.classList.remove('hidden');
+      card.classList.remove('pop');
+      void card.offsetWidth;
+      card.classList.add('pop');
+      launchConfetti();
+    });
+
+    // Replay button
+    replayBtn.addEventListener('click', () => {
+      isAccepted = false;
+      dodgeCount = 0;
+      isEscaping = false;
+
+      noBtn.classList.remove('hidden', 'escaping');
+      noBtn.style.left = '';
+      noBtn.style.top = '';
+      buttonsWrap.appendChild(noBtn);
+
+      yesBtn.style.transform = '';
+      yesBtn.style.removeProperty('--yes-scale');
+
+      subtitle.textContent = 'HADİ HADİ HADİİ';
+      catMouth.setAttribute('d', 'M92 114 Q96 119 100 114 Q104 119 108 114');
+
+      successView.classList.add('hidden');
+      questionView.classList.remove('hidden');
+    });
+
+    createBackgroundPears();
+  </script>
+</body>
+</html>
